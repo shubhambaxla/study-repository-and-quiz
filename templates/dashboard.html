@@ -1,0 +1,622 @@
+{% extends "layout.html" %}
+
+{% block title %}My Dashboard | ExamElite{% endblock %}
+
+{% block content %}
+<style>
+/* Inline CSS for Dashboard Page */
+
+/* General Layout */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f7fc; /* Light background for dashboard */
+    color: #333;
+}
+
+/* Dashboard Header */
+.dashboard-header {
+    background: linear-gradient(to right, #6a82fb, #fc5c7d); /* Example gradient */
+    color: #ffffff;
+    padding: 40px 0;
+    margin-bottom: 40px;
+    border-radius: 0 0 15px 15px; /* Rounded bottom corners */
+}
+
+.dashboard-header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.user-welcome {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.user-avatar img,
+.user-avatar .avatar-placeholder {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid rgba(255, 255, 255, 0.5);
+}
+
+.user-avatar .avatar-placeholder {
+    background-color: rgba(255, 255, 255, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    font-weight: 600;
+}
+
+.welcome-message h1 {
+    margin: 0 0 5px 0;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.welcome-message p {
+    margin: 0;
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+.dashboard-actions {
+    display: flex;
+    gap: 15px;
+}
+
+/* General Button Styles (Adapt if layout.html has base styles) */
+.btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid transparent;
+}
+
+.btn-primary {
+    background-color: #ffffff;
+    color: #6a82fb; /* Match gradient start color */
+    border-color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+.btn-outline:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: #ffffff;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 13px;
+    gap: 5px;
+}
+
+/* Dashboard Stats */
+.dashboard-stats {
+    margin-bottom: 40px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 25px;
+}
+
+.stat-card {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.stat-icon {
+    font-size: 30px;
+    color: #6a82fb; /* Use a consistent theme color */
+    background-color: #eef1ff; /* Light background for icon */
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.stat-info h3 {
+    margin: 0 0 5px 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+}
+
+.stat-info p {
+    margin: 0;
+    font-size: 14px;
+    color: #777;
+}
+
+/* Dashboard Content Area */
+.dashboard-content {
+    margin-bottom: 40px;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+}
+
+@media (min-width: 992px) {
+    .dashboard-grid {
+        grid-template-columns: 2fr 1fr; /* Main content takes more space */
+    }
+}
+
+/* Section Card Styling */
+.section-card {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px; /* Space below each card */
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+.section-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+}
+
+.view-options {
+    display: flex;
+    gap: 5px;
+    background-color: #f4f7fc;
+    border-radius: 8px;
+    padding: 4px;
+}
+
+.view-option {
+    background: none;
+    border: none;
+    color: #777;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.view-option:hover {
+    color: #333;
+}
+
+.view-option.active {
+    background-color: #6a82fb;
+    color: #ffffff;
+}
+
+/* Materials List/Grid */
+.materials-container {
+    display: grid;
+    gap: 20px;
+}
+
+.materials-container.grid-view {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.materials-container.list-view {
+    grid-template-columns: 1fr;
+}
+
+.material-item {
+    background-color: #f9fafc;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: box-shadow 0.2s ease;
+}
+
+.material-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.material-icon {
+    font-size: 24px;
+    color: #6a82fb;
+}
+
+.material-details {
+    flex-grow: 1;
+}
+
+.material-details h3 {
+    margin: 0 0 3px 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: #444;
+}
+
+.material-details p {
+    margin: 0;
+    font-size: 13px;
+    color: #888;
+}
+
+.material-actions .btn {
+    /* Adjust button styles for this context if needed */
+    background-color: #eef1ff;
+    color: #6a82fb;
+    border-color: #eef1ff;
+}
+.material-actions .btn:hover {
+    background-color: #d9dfff;
+}
+
+/* List View Specific Adjustments */
+.materials-container.list-view .material-item {
+    justify-content: space-between; /* Push actions to the right */
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+}
+
+.empty-state i {
+    font-size: 40px;
+    margin-bottom: 15px;
+    color: #ccc;
+}
+
+.empty-state p {
+    font-size: 16px;
+}
+
+/* Recommended Materials Sidebar */
+.recommended-materials {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.recommended-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.recommended-item:last-child {
+    border-bottom: none;
+}
+
+.recommended-item h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 500;
+    color: #555;
+    flex-grow: 1;
+    margin-right: 10px; /* Space before button */
+}
+
+.recommended-item .btn {
+    background-color: #eef1ff;
+    color: #6a82fb;
+    border-color: #eef1ff;
+}
+.recommended-item .btn:hover {
+    background-color: #d9dfff;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .dashboard-header .container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .user-welcome {
+        margin-bottom: 20px;
+    }
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 15px;
+    }
+    .stat-card {
+        padding: 20px;
+        gap: 15px;
+    }
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+    }
+    .stat-info h3 {
+        font-size: 20px;
+    }
+    .section-card {
+        padding: 20px;
+    }
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .user-avatar img,
+    .user-avatar .avatar-placeholder {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+    }
+    .welcome-message h1 {
+        font-size: 22px;
+    }
+    .welcome-message p {
+        font-size: 14px;
+    }
+    .dashboard-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+    .dashboard-actions .btn {
+        justify-content: center;
+    }
+    .stats-grid {
+        grid-template-columns: 1fr 1fr; /* Force two columns */
+    }
+    .materials-container.grid-view {
+        grid-template-columns: 1fr; /* Stack grid items */
+    }
+}
+
+</style>
+<section class="dashboard-header">
+    <div class="container">
+        <div class="user-welcome">
+            <div class="user-avatar">
+                {% if user.profile_picture %}
+                    <img src="{{ url_for('static', filename='images/' + user.profile_picture) }}" alt="{{ user.username }}">
+                {% else %}
+                    <div class="avatar-placeholder">{{ user.username[0].upper() }}</div>
+                {% endif %}
+            </div>
+            <div class="welcome-message">
+                <h1>Welcome back, {{ user.username }}!</h1>
+                <p>{{ user.university.name }} • Joined {{ user.join_date.strftime('%B %Y') }}</p>
+            </div>
+        </div>
+        
+        <div class="dashboard-actions">
+            <a href="{{ url_for('upload') }}" class="btn btn-primary">
+                <i class="fas fa-upload"></i> Upload Materials
+            </a>
+            <a href="#" class="btn btn-outline">
+                <i class="fas fa-user-edit"></i> Edit Profile
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="dashboard-stats">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 class="counter">{{ materials|length }}</h3>
+                    <p>Uploaded Materials</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-download"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 class="counter">{{ materials|sum(attribute='download_count')|default(0) }}</h3>
+                    <p>Total Downloads</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-info">
+                    {% set avg_rating = materials|sum(attribute='rating')|default(0) / materials|length if materials|length > 0 else 0 %}
+                    <h3 class="counter">{{ "%.1f"|format(avg_rating) }}</h3>
+                    <p>Average Rating</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 class="counter">{{ materials|sum(attribute='view_count')|default(0) }}</h3>
+                    <p>Total Views</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="dashboard-content">
+    <div class="container">
+        <div class="dashboard-grid">
+            <div class="dashboard-main">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2>My Materials</h2>
+                        <div class="view-options">
+                            <button class="view-option active" data-view="grid">
+                                <i class="fas fa-th"></i>
+                            </button>
+                            <button class="view-option" data-view="list">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    {% if materials %}
+                        <div class="materials-container grid-view">
+                            {% for material in materials %}
+                                <div class="material-item">
+                                    <div class="material-icon">
+                                        <i class="fas fa-file"></i>
+                                    </div>
+                                    <div class="material-details">
+                                        <h3>{{ material.title }}</h3>
+                                        <p>{{ material.course.name }}</p>
+                                    </div>
+                                    <div class="material-actions">
+                                        <a href="{{ url_for('view_material', material_id=material.id) }}" class="btn btn-outline btn-sm">View</a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-file-upload"></i>
+                            <p>You haven't uploaded any materials yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2>Available Quizzes</h2>
+                    </div>
+                    <div class="quizzes-container">
+                        {% if quizzes %}
+                            <ul>
+                                {% for quiz in quizzes %}
+                                    <li>
+                                        {{ quiz.title }} - Code: {{ quiz.quiz_code }} - Code: {{ quiz.quiz_code }} -
+                                        <a href="{{ url_for('take_quiz', quiz_id=quiz.id) }}" class="btn btn-outline btn-sm">Take Quiz</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="fas fa-question-circle"></i>
+                                <p>No quizzes available yet.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dashboard-sidebar">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2>Recommended Materials</h2>
+                    </div>
+                    <div class="recommended-materials">
+                        {% for material in recommended %}
+                            <div class="recommended-item">
+                                <h3>{{ material.title }}</h3>
+                                <a href="{{ url_for('view_material', material_id=material.id) }}" class="btn btn-outline btn-sm">View</a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // View options toggle (grid/list)
+        const viewOptions = document.querySelectorAll('.view-option');
+        const materialsContainer = document.querySelector('.materials-container');
+
+        viewOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                viewOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                const viewType = this.getAttribute('data-view');
+                materialsContainer.className = `materials-container ${viewType}-view`;
+            });
+        });
+
+        // Animated counters
+        const counters = document.querySelectorAll('.counter');
+        counters.forEach(counter => {
+            let startValue = 0;
+            const finalValue = parseFloat(counter.textContent);
+            const increment = finalValue / 100;
+            const counterInterval = setInterval(() => {
+                startValue += increment;
+                if (startValue >= finalValue) {
+                    counter.textContent = Math.floor(finalValue);
+                    clearInterval(counterInterval);
+                } else {
+                    counter.textContent = Math.floor(startValue);
+                }
+            }, 20);
+        });
+    });
+</script>
+{% endblock %}

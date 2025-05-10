@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block content %}
+<style>
+    .search-results-section {
+        padding: 20px;
+    }
+    .search-results-section h2 {
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+    }
+    .material-item {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        background-color: #f9f9f9;
+    }
+    .material-icon {
+        font-size: 24px;
+        margin-right: 15px;
+        color: #007bff; /* Example color */
+    }
+    .material-info h3 {
+        margin: 0;
+        font-size: 1.1rem;
+    }
+    .material-info p {
+        margin: 5px 0;
+        color: #555;
+    }
+</style>
+
+<div class="search-results-section">
+    <h2>Search Results for "{{ query }}"</h2>
+
+    {% if materials %}
+        {% for material in materials %}
+            <div class="material-item">
+                <div class="material-icon">
+                    <i class="fas fa-file-pdf"></i>  <!-- PDF icon - Use appropriate icon based on file type -->
+                </div>
+                <div class="material-info">
+                    <h3>{{ material.title }}</h3>
+                    <p>{{ material.description }}</p>
+                    {% if material.course %}
+                        <p>Course: {{ material.course.name }}</p>
+                    {% endif %}
+                </div>
+                <!-- Add download or view buttons here if needed -->
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No results found.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ExamElite{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    {% block extra_css %}{% endblock %}
+<style>
+    /* Inline styles for layout elements */
+
+    /* Navbar and Search Bar Styling */
+    .navbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 15px 30px; /* Slightly adjusted padding */
+        background: rgba(255, 255, 255, 0.95); /* Slightly more opaque white */
+        backdrop-filter: blur(8px); /* Reduced blur */
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08); /* Subtle shadow */
+        position: sticky; /* Make navbar sticky */
+        top: 0;
+        z-index: 1000; /* Ensure it's above other content */
+        flex-wrap: wrap;
+    }
+
+    .logo a {
+        font-size: 1.8rem;
+        font-weight: 700; /* Bolder logo */
+        text-decoration: none;
+        color: #333; /* Dark color for logo */
+    }
+
+    .logo a span {
+        color: #007bff; /* Blue color for accent */
+    }
+
+    .search-bar {
+        flex-grow: 1; /* Allow search bar to take available space */
+        max-width: 500px; /* Limit max width */
+        margin: 0 20px; /* Add some margin */
+    }
+
+    .search-bar form {
+        display: flex;
+        border: 1px solid #ced4da; /* Match input border */
+        border-radius: 25px; /* Rounded corners for the whole bar */
+        overflow: hidden; /* Hide overflow */
+        background-color: #f8f9fa; /* Light background */
+    }
+
+    .search-bar input[type="text"] {
+        flex-grow: 1; /* Input takes remaining space */
+        padding: 10px 20px;
+        border: none; /* Remove input border */
+        outline: none; /* Remove outline on focus */
+        font-size: 1rem;
+        background-color: transparent; /* Transparent background */
+        color: #333;
+    }
+
+    .search-bar input[type="text"]::placeholder {
+        color: #888; /* Placeholder color */
+    }
+
+    .search-bar button {
+        padding: 10px 15px; /* Padding for button */
+        border: none;
+        background-color: transparent; /* Transparent background */
+        color: #007bff; /* Blue icon color */
+        cursor: pointer;
+        font-size: 1rem;
+        transition: color 0.2s ease;
+    }
+
+    .search-bar button:hover {
+        color: #0056b3; /* Darker blue on hover */
+    }
+
+    .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .nav-link {
+        text-decoration: none;
+        color: #555; /* Grey link color */
+        font-weight: 500;
+        transition: color 0.2s ease;
+    }
+
+    .nav-link:hover {
+        color: #000; /* Darker on hover */
+    }
+
+    .nav-link.highlight {
+        background-color: #007bff;
+        color: #ffffff;
+        padding: 8px 15px;
+        border-radius: 20px;
+        transition: background-color 0.2s ease;
+    }
+
+    .nav-link.highlight:hover {
+        background-color: #0056b3;
+    }
+
+    .profile-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .profile-btn {
+        background-color: #007bff; /* Blue background for profile button */
+        color: #ffffff;
+        width: 35px; /* Adjusted size */
+        height: 35px;
+        border-radius: 50%;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1rem;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 120px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
+        z-index: 1; /* Ensure dropdown is above content */
+        border-radius: 8px;
+        top: 40px; /* Position below button */
+        right: 0; /* Align to the right */
+        overflow: hidden;
+    }
+
+    .dropdown-content a {
+        color: #333;
+        padding: 10px 14px;
+        text-decoration: none;
+        display: block;
+        transition: background-color 0.2s ease;
+    }
+
+    .dropdown-content a:hover {
+        background-color: #e9e9e9;
+    }
+
+    .profile-dropdown:hover .dropdown-content {
+        display: block; /* Show dropdown on hover */
+    }
+
+     /* Flash Message Styling */
+    .flash-messages {
+        margin: 20px auto; /* Center flash messages */
+        width: 90%;
+        max-width: 1200px;
+        padding: 0 15px;
+    }
+
+    .alert {
+        padding: 15px;
+        margin-bottom: 15px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 15px;
+    }
+
+    .alert-success {
+        color: #155724;
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+    }
+
+    .alert-danger {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+    }
+
+     .alert-warning {
+        color: #856404;
+        background-color: #fff3cd;
+        border-color: #ffeeba;
+    }
+
+     .alert-info {
+        color: #0c5460;
+        background-color: #d1ecf1;
+        border-color: #bee5eb;
+    }
+
+    .close-alert {
+        background: none;
+        border: none;
+        font-size: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        color: inherit;
+        opacity: 0.7;
+        margin-left: 15px;
+    }
+
+    .close-alert:hover {
+        opacity: 1;
+    }
+
+    /* Main Content Padding */
+    .main-content {
+        padding-top: 20px; /* Add padding below navbar */
+    }
+
+    /* Footer Styling */
+    .footer {
+        background-color: #2c3e50; /* Dark blue-grey */
+        color: #ecf0f1; /* Light grey text */
+        padding: 40px 0;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    .footer-section h3 {
+        color: #3498db; /* Blue heading */
+        margin-bottom: 15px;
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    .footer-section p {
+        font-size: 0.9rem;
+        line-height: 1.6;
+        color: #bdc3c7; /* Lighter grey */
+    }
+
+    .footer-section ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .footer-section ul li {
+        margin-bottom: 10px;
+    }
+
+    .footer-section ul li a {
+        text-decoration: none;
+        color: #ecf0f1;
+        font-size: 0.9rem;
+        transition: color 0.2s ease;
+    }
+
+    .footer-section ul li a:hover {
+        color: #3498db; /* Blue on hover */
+    }
+
+    .social-links a {
+        display: inline-block;
+        margin-right: 10px;
+        color: #ecf0f1;
+        font-size: 1.5rem;
+        transition: color 0.2s ease;
+    }
+
+    .social-links a:hover {
+         color: #3498db;
+    }
+
+    .footer-bottom {
+        text-align: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #34495e; /* Darker border */
+        font-size: 0.8rem;
+        color: #bdc3c7;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .navbar {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 15px 20px;
+        }
+        .search-bar {
+            margin: 15px 0;
+            width: 100%;
+            max-width: 100%;
+        }
+        .nav-links {
+            margin-top: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .footer-content {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+        .social-links {
+            margin-top: 15px;
+        }
+    }
+
+
+</style>
+</head>
+<body>
+    <!-- Light Green + White Background (from original index.html) -->
+    <div id="background"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <a href="{{ url_for('index') }}">Exam<span>Elite</span></a>
+        </div>
+        {% if user %}
+        <div class="search-bar">
+            <form action="{{ url_for('search') }}" method="GET">
+                <input type="text" name="q" placeholder="Search courses, notes, exams...">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+        {% endif %}
+        <div class="nav-links">
+            <a href="{{ url_for('enter_quiz_code') }}" class="nav-link">Enter Quiz Code</a>
+            {% if user %}
+                <a href="{{ url_for('dashboard') }}" class="nav-link">Dashboard</a>
+                <a href="{{ url_for('upload') }}" class="nav-link">Upload</a>
+                <a href="{{ url_for('create_quiz') }}" class="nav-link">Create Quiz</a>
+                <div class="profile-dropdown">
+                    <button class="profile-btn">{{ user.username[0] }}</button>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('profile') }}">Profile</a>
+                        <a href="{{ url_for('logout') }}">Logout</a>
+                    </div>
+                </div>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="nav-link">Login</a>
+                <a href="{{ url_for('register') }}" class="nav-link highlight">Sign Up</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                        <button type="button" class="close-alert">&times;</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>ExamElite</h3>
+                <p>Empowering students with quality study materials and collaborative learning.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    {% if not user %}
+                        <li><a href="{{ url_for('login') }}">Login</a></li>
+                        <li><a href="{{ url_for('register') }}">Sign Up</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: support@examelite.com</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 ExamElite. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

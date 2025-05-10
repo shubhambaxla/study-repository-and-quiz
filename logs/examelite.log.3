@@ -1,0 +1,114 @@
+2025-05-05 23:02:40,351 ERROR: Exception on /material/1 [GET] [in C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py:875]
+Traceback (most recent call last):
+  File "C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\Desktop\New folder (2)\app.py", line 118, in decorated_function
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\Desktop\New folder (2)\app.py", line 273, in view_material
+    return render_template('material.html', material=material)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\templating.py", line 149, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\jinja2\environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\jinja2\environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\jinja2\environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\jinja2\loaders.py", line 126, in load
+    source, filename, uptodate = self.get_source(environment, name)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\templating.py", line 65, in get_source
+    return self._get_source_fast(environment, template)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\templating.py", line 99, in _get_source_fast
+    raise TemplateNotFound(template)
+jinja2.exceptions.TemplateNotFound: material.html
+2025-05-05 23:02:40,360 ERROR: Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. [in C:\Users\shubh\Desktop\New folder (2)\app.py:416]
+2025-05-05 23:02:44,790 ERROR: Exception on /material/46 [GET] [in C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py:875]
+Traceback (most recent call last):
+  File "C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\Desktop\New folder (2)\app.py", line 118, in decorated_function
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\Desktop\New folder (2)\app.py", line 273, in view_material
+    return render_template('material.html', material=material)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\templating.py", line 149, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\jinja2\environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\jinja2\environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\jinja2\environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\jinja2\loaders.py", line 126, in load
+    source, filename, uptodate = self.get_source(environment, name)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\templating.py", line 65, in get_source
+    return self._get_source_fast(environment, template)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\templating.py", line 99, in _get_source_fast
+    raise TemplateNotFound(template)
+jinja2.exceptions.TemplateNotFound: material.html
+2025-05-05 23:02:44,792 ERROR: Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. [in C:\Users\shubh\Desktop\New folder (2)\app.py:416]
+2025-05-05 23:07:45,245 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:41]
+2025-05-05 23:07:51,259 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:41]
+2025-05-05 23:07:51,885 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:41]
+2025-05-05 23:15:26,460 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:41]
+2025-05-05 23:15:27,125 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:41]
+2025-05-06 01:52:49,031 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:41]
+2025-05-06 01:52:49,795 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:41]
+2025-05-06 02:08:24,910 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:41]
+2025-05-06 02:08:25,684 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:41]
+2025-05-06 02:11:27,748 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:41]
+2025-05-06 02:16:08,310 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:42]
+2025-05-06 02:16:08,948 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:42]
+2025-05-06 02:17:34,044 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:42]
+2025-05-06 02:17:54,824 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:42]
+2025-05-06 02:18:04,885 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:42]
+2025-05-06 02:18:15,085 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:42]
+2025-05-06 02:18:43,575 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:42]
+2025-05-06 02:20:06,624 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:42]
+2025-05-06 02:20:20,069 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:42]
+2025-05-06 02:20:44,731 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:42]
+2025-05-06 02:21:02,939 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:42]
+2025-05-06 02:21:41,566 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:42]
+2025-05-06 02:27:35,029 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:42]
+2025-05-06 02:27:49,480 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:42]
+2025-05-06 02:27:51,241 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:42]
+2025-05-06 02:28:00,956 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:42]
+2025-05-06 12:45:05,194 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:42]
+2025-05-06 12:45:05,907 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:42]
+2025-05-06 12:46:18,711 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:42]
+2025-05-06 12:46:18,735 INFO: ExamElite startup [in C:\Users\shubh\Desktop\New folder (2)\app.py:42]

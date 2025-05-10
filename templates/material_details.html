@@ -1,0 +1,582 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ material.title }} - ExamElite{% endblock %}
+
+{% block content %}
+<div class="material-details-page">
+    <div class="container">
+        <div class="breadcrumb animate">
+            <a href="{{ url_for('index') }}">Home</a>
+            <span class="separator">/</span>
+            <a href="{{ url_for('dashboard') }}">Materials</a> {# Changed 'materials' to 'dashboard' as there's no 'materials' endpoint #}
+            <span class="separator">/</span>
+            <span class="current">{{ material.title }}</span>
+        </div>
+
+        <div class="material-details-container">
+            <div class="material-main-content animate">
+                <div class="material-header">
+                    <h1 class="material-title">{{ material.title }}</h1>
+                    <div class="material-meta">
+                        <span class="material-subject">{{ material.subject }}</span>
+                        <span class="material-type">{{ material.type }}</span>
+                        <span class="material-date">{{ material.upload_date.strftime('%B %d, %Y') }}</span> {# Changed date_created to upload_date #}
+                    </div>
+                    <div class="material-rating-container">
+                        <div class="rating-display">
+                            <div class="stars">
+                                {% for i in range(5) %}
+                                    {# Use material.rating instead of material.average_rating #}
+                                    {% if i < material.rating|int %}
+                                        <i class="fas fa-star filled"></i>
+                                    {% elif i < material.rating|round(0, 'ceil') and material.rating|int != material.rating|round(0, 'ceil') %}
+                                        <i class="fas fa-star-half-alt filled"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            {# Use material.rating instead of material.average_rating and remove the ratings count #}
+                            <span class="rating-value">{{ material.rating|round(1) }}</span>
+                            {# <span class="rating-count">({{ material.ratings|length }} ratings)</span> #} {# ratings attribute does not exist #}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="material-author">
+                    <div class="author-avatar">
+                        {# Use material.author instead of material.user and add checks for material.author #}
+                        <img src="{{ url_for('static', filename='images/avatars/' + material.author.avatar) if material.author and material.author.avatar else url_for('static', filename='images/default-avatar.png') }}" alt="{{ material.author.username if material.author else 'Unknown User' }}">
+                    </div>
+                    <div class="author-info">
+                        {# Use material.author instead of material.user #}
+                        <span class="author-name">{{ material.author.username if material.author else 'Unknown User' }}</span>
+                        {# Accessing university name via author relationship #}
+                        <span class="author-role">{{ material.author.university.name if material.author and material.author.university else 'N/A' }}</span> {# Accessing university name #}
+                    </div>
+                </div>
+
+                <div class="material-description">
+                    <h3>Description</h3>
+                    <p>{{ material.description }}</p>
+                </div>
+
+                {% if material.preview_images %}
+                <div class="material-preview-images">
+                    <h3>Preview</h3>
+                    <div class="preview-grid">
+                        {% for preview in material.preview_images %}
+                        <div class="preview-image">
+                            <img src="{{ url_for('static', filename='uploads/previews/' + preview) }}" alt="Preview {{ loop.index }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="material-details-table">
+                    <h3>Details</h3>
+                    <table>
+                        <tr>
+                            <th>University</th>
+                            <td>{{ material.university }}</td>
+                        </tr>
+                        <tr>
+                            <th>Course</th>
+                            <td>{{ material.course }}</td>
+                        </tr>
+                        <tr>
+                            <th>Academic Year</th>
+                            <td>{{ material.academic_year }}</td>
+                        </tr>
+                        <tr>
+                            <th>Number of Pages</th>
+                            <td>{{ material.pages }}</td>
+                        </tr>
+                        <tr>
+                            <th>File Type</th>
+                            <td>{{ material.file_type.upper() }}</td>
+                        </tr>
+                        <tr>
+                            <th>File Size</th>
+                            <td>{{ material.file_size_formatted }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="material-sidebar animate">
+                <div class="material-actions">
+                    <a href="{{ url_for('download_material', material_id=material.id) }}" class="btn btn-primary btn-lg btn-block">
+                        <i class="fas fa-download"></i> Download
+                    </a>
+                    
+                    <div class="action-buttons">
+                        <button class="action-btn bookmark-btn {% if material.is_bookmarked_by_user(current_user.id) %}active{% endif %}" data-material-id="{{ material.id }}">
+                            <i class="{% if material.is_bookmarked_by_user(current_user.id) %}fas{% else %}far{% endif %} fa-bookmark"></i>
+                            <span>Save</span>
+                        </button>
+                        
+                        <button class="action-btn share-btn" data-material-id="{{ material.id }}" data-title="{{ material.title }}">
+                            <i class="fas fa-share-alt"></i>
+                            <span>Share</span>
+                        </button>
+                        
+                        <button class="action-btn report-btn" data-material-id="{{ material.id }}">
+                            <i class="fas fa-flag"></i>
+                            <span>Report</span>
+                        </button>
+                    </div> {# closes .action-buttons #}
+                </div> {# closes .material-actions #}
+
+                <div class="rate-material-card">
+                    <h3>Rate this material</h3>
+                    <div class="rating-container" data-material-id="{{ material.id }}">
+                        <div class="stars">
+                            {% for i in range(1, 6) %}
+                            <span class="star" data-value="{{ i }}">
+                                <i class="far fa-star"></i>
+                            </span>
+                            {% endfor %}
+                        </div>
+                        <input type="hidden" name="rating" value="{{ user_rating }}">
+                    </div>
+                    <p class="rating-help">Click to rate this material</p>
+                </div>
+
+                <div class="similar-materials-card">
+                    <h3>Similar Materials</h3>
+                    <div class="similar-materials-list">
+                        {% for similar in similar_materials %}
+                        <a href="{{ url_for('material_details', material_id=similar.id) }}" class="similar-material-item">
+                            <div class="material-icon">
+                                <i class="fas fa-{{ similar.get_icon_class() }}"></i>
+                            </div>
+                            <div class="similar-material-info">
+                                <h4>{{ similar.title }}</h4>
+                                <span class="similar-material-course">{{ similar.course }}</span>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div> {# closes .material-sidebar #}
+        </div> {# closes .material-details-container #}
+
+        <div class="material-comments-section animate">
+            <h2>Comments ({{ material.comments|length }})</h2>
+            
+            <div class="comment-form-container">
+                {% if current_user.is_authenticated %}
+                <form class="comment-form" data-material-id="{{ material.id }}">
+                    <div class="form-group">
+                        <label for="comment">Write a comment</label>
+                        <textarea name="comment" id="comment" rows="3" placeholder="Share your thoughts about this material..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Post Comment</button>
+                </form>
+                {% else %}
+                <div class="login-to-comment">
+                    <p>Please <a href="{{ url_for('login', next=request.path) }}">login</a> to post a comment.</p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="comments-container">
+                {% if material.comments %}
+                    {% for comment in material.comments if comment.parent_id is none %}
+                    <div class="comment" data-comment-id="{{ comment.id }}">
+                        <div class="comment-avatar">
+                            {# comment object should have a user attribute based on relationship #}
+                            <img src="{{ url_for('static', filename='images/avatars/' + comment.user.avatar) if comment.user and comment.user.avatar else url_for('static', filename='images/default-avatar.png') }}" alt="{{ comment.user.username if comment.user else 'Unknown User' }}">
+                        </div>
+                        <div class="comment-content">
+                            <div class="comment-header">
+                                {# comment object should have a user attribute based on relationship #}
+                                <span class="comment-author">{{ comment.user.username if comment.user else 'Unknown User' }}</span>
+                                <span class="comment-date">{{ comment.created_at.strftime('%B %d, %Y') }}</span>
+                            </div>
+                            <div class="comment-text">{{ comment.text }}</div>
+                            <div class="comment-actions">
+                                <button class="reply-btn" data-comment-id="{{ comment.id }}">Reply</button>
+                                {% if current_user.id == comment.user_id or current_user.is_admin %}
+                                <button class="delete-btn" data-comment-id="{{ comment.id }}">Delete</button>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="reply-form" data-parent-id="{{ comment.id }}" style="display: none;">
+                                {% if current_user.is_authenticated %}
+                                <form class="comment-form" data-material-id="{{ material.id }}" data-parent-id="{{ comment.id }}">
+                                    <textarea name="comment" placeholder="Write your reply..."></textarea>
+                                    <button type="submit" class="btn btn-primary">Post Reply</button>
+                                </form>
+                                {% else %}
+                                <div class="login-to-comment">
+                                    <p>Please <a href="{{ url_for('login', next=request.path) }}">login</a> to reply.</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            {% if comment.replies %}
+                            <div class="comment-replies">
+                                {% for reply in comment.replies %}
+                                <div class="comment reply" data-comment-id="{{ reply.id }}">
+                                    <div class="comment-avatar">
+                                        {# reply object should have a user attribute based on relationship #}
+                                        <img src="{{ url_for('static', filename='images/avatars/' + reply.user.avatar) if reply.user and reply.user.avatar else url_for('static', filename='images/default-avatar.png') }}" alt="{{ reply.user.username if reply.user else 'Unknown User' }}">
+                                    </div>
+                                    <div class="comment-content">
+                                        <div class="comment-header">
+                                            {# reply object should have a user attribute based on relationship #}
+                                            <span class="comment-author">{{ reply.user.username if reply.user else 'Unknown User' }}</span>
+                                            <span class="comment-date">{{ reply.created_at.strftime('%B %d, %Y') }}</span>
+                                        </div>
+                                        <div class="comment-text">{{ reply.text }}</div>
+                                        <div class="comment-actions">
+                                            {% if current_user.id == reply.user_id or current_user.is_admin %}
+                                            <button class="delete-btn" data-comment-id="{{ reply.id }}">Delete</button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="no-comments">
+                    <p>Be the first to comment on this material!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %} {# Close the content block #}
+
+<!-- Preview Modal -->
+<div id="previewModal" class="modal">
+    <div class="modal-content">
+        <span id="previewClose" class="modal-close">&times;</span>
+        <div id="previewContent" class="preview-content"></div>
+    </div>
+</div>
+
+<!-- Report Modal -->
+<div id="reportModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h2>Report Material</h2>
+        <form id="reportForm" data-material-id="{{ material.id }}">
+            <div class="form-group">
+                <label for="reportReason">Reason</label>
+                <select id="reportReason" name="reason" required>
+                    <option value="">Select a reason</option>
+                    <option value="copyright">Copyright Infringement</option>
+                    <option value="inappropriate">Inappropriate Content</option>
+                    <option value="plagiarism">Plagiarism</option>
+                    <option value="incorrect">Incorrect Information</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="reportDescription">Description</label>
+                <textarea id="reportDescription" name="description" rows="4" placeholder="Please provide details about your report"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Report</button>
+        </form>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize the report modal
+        const reportBtns = document.querySelectorAll('.report-btn');
+        const reportModal = document.getElementById('reportModal');
+        const closeButtons = document.querySelectorAll('.modal-close');
+        
+        reportBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                reportModal.style.display = 'flex';
+            });
+        });
+        
+        closeButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const modal = this.closest('.modal');
+                modal.style.display = 'none';
+            });
+        });
+        
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        });
+        
+        // Handle report form submission
+        const reportForm = document.getElementById('reportForm');
+        if (reportForm) {
+            reportForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const materialId = this.getAttribute('data-material-id');
+                const formData = new FormData(this);
+                
+                fetch('/api/report', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        materialId: materialId,
+                        reason: formData.get('reason'),
+                        description: formData.get('description')
+                    }),
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('success', 'Report submitted successfully!');
+                        reportModal.style.display = 'none';
+                        reportForm.reset();
+                    } else {
+                        showNotification('error', data.message || 'Failed to submit report.');
+                    }
+                })
+                .catch(error => {
+                    showNotification('error', 'An error occurred while submitting your report.');
+                    console.error('Error:', error);
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}
+                                {% if current_user.is_authenticated %}
+                                <form class="comment-form" data-material-id="{{ material.id }}" data-parent-id="{{ comment.id }}">
+                                    <textarea name="comment" placeholder="Write your reply..."></textarea>
+                                    <button type="submit" class="btn btn-primary">Post Reply</button>
+                                </form>
+                                {% else %}
+                                <div class="login-to-comment">
+                                    <p>Please <a href="{{ url_for('login', next=request.path) }}">login</a> to reply.</p>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            {% if comment.replies %}
+                            <div class="comment-replies">
+                                {% for reply in comment.replies %}
+                                <div class="comment reply" data-comment-id="{{ reply.id }}">
+                                    <div class="comment-avatar">
+                                        {# reply object should have a user attribute based on relationship #}
+                                        <img src="{{ url_for('static', filename='images/avatars/' + reply.user.avatar) if reply.user and reply.user.avatar else url_for('static', filename='images/default-avatar.png') }}" alt="{{ reply.user.username if reply.user else 'Unknown User' }}">
+                                    </div>
+                                    <div class="comment-content">
+                                        <div class="comment-header">
+                                            {# reply object should have a user attribute based on relationship #}
+                                            <span class="comment-author">{{ reply.user.username if reply.user else 'Unknown User' }}</span>
+                                            <span class="comment-date">{{ reply.created_at.strftime('%B %d, %Y') }}</span>
+                                        </div>
+                                        <div class="comment-text">{{ reply.text }}</div>
+                                        <div class="comment-actions">
+                                            {% if current_user.id == reply.user_id or current_user.is_admin %}
+                                            <button class="delete-btn" data-comment-id="{{ reply.id }}">Delete</button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="login-to-comment">
+                    <p>Please <a href="{{ url_for('login', next=request.path) }}">login</a> to post a comment.</p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="comments-container">
+                {% if material.comments %}
+                    {% for comment in material.comments if comment.parent_id is none %}
+                    <div class="comment" data-comment-id="{{ comment.id }}">
+                        <div class="comment-avatar">
+                            {# comment object should have a user attribute based on relationship #}
+                            <img src="{{ url_for('static', filename='images/avatars/' + comment.user.avatar) if comment.user and comment.user.avatar else url_for('static', filename='images/default-avatar.png') }}" alt="{{ comment.user.username if comment.user else 'Unknown User' }}">
+                        </div>
+                        <div class="comment-content">
+                            <div class="comment-header">
+                                {# comment object should have a user attribute based on relationship #}
+                                <span class="comment-author">{{ comment.user.username if comment.user else 'Unknown User' }}</span>
+                                <span class="comment-date">{{ comment.created_at.strftime('%B %d, %Y') }}</span>
+                            </div>
+                            <div class="comment-text">{{ comment.text }}</div>
+                            <div class="comment-actions">
+                                <button class="reply-btn" data-comment-id="{{ comment.id }}">Reply</button>
+                                {% if current_user.id == comment.user_id or current_user.is_admin %}
+                                <button class="delete-btn" data-comment-id="{{ comment.id }}">Delete</button>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="reply-form" data-parent-id="{{ comment.id }}" style="display: none;">
+                                {% if current_user.is_authenticated %}
+                                <form class="comment-form" data-material-id="{{ material.id }}" data-parent-id="{{ comment.id }}">
+                                    <textarea name="comment" placeholder="Write your reply..."></textarea>
+                                    <button type="submit" class="btn btn-primary">Post Reply</button>
+                                </form>
+                                {% else %}
+                                <div class="login-to-comment">
+                                    <p>Please <a href="{{ url_for('login', next=request.path) }}">login</a> to reply.</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            {% if comment.replies %}
+                            <div class="comment-replies">
+                                {% for reply in comment.replies %}
+                                <div class="comment reply" data-comment-id="{{ reply.id }}">
+                                    <div class="comment-avatar">
+                                        <img src="{{ url_for('static', filename='images/avatars/' + reply.user.avatar) if reply.user.avatar else url_for('static', filename='images/default-avatar.png') }}" alt="{{ reply.user.username }}">
+                                    </div>
+                                    <div class="comment-content">
+                                        <div class="comment-header">
+                                            <span class="comment-author">{{ reply.user.username }}</span>
+                                            <span class="comment-date">{{ reply.created_at.strftime('%B %d, %Y') }}</span>
+                                        </div>
+                                        <div class="comment-text">{{ reply.text }}</div>
+                                        <div class="comment-actions">
+                                            {% if current_user.id == reply.user_id or current_user.is_admin %}
+                                            <button class="delete-btn" data-comment-id="{{ reply.id }}">Delete</button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="no-comments">
+                    <p>Be the first to comment on this material!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} {# Close the content block #}
+
+<!-- Preview Modal -->
+<div id="previewModal" class="modal">
+    <div class="modal-content">
+        <span id="previewClose" class="modal-close">&times;</span>
+        <div id="previewContent" class="preview-content"></div>
+    </div>
+</div>
+
+<!-- Report Modal -->
+<div id="reportModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h2>Report Material</h2>
+        <form id="reportForm" data-material-id="{{ material.id }}">
+            <div class="form-group">
+                <label for="reportReason">Reason</label>
+                <select id="reportReason" name="reason" required>
+                    <option value="">Select a reason</option>
+                    <option value="copyright">Copyright Infringement</option>
+                    <option value="inappropriate">Inappropriate Content</option>
+                    <option value="plagiarism">Plagiarism</option>
+                    <option value="incorrect">Incorrect Information</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="reportDescription">Description</label>
+                <textarea id="reportDescription" name="description" rows="4" placeholder="Please provide details about your report"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Report</button>
+        </form>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize the report modal
+        const reportBtns = document.querySelectorAll('.report-btn');
+        const reportModal = document.getElementById('reportModal');
+        const closeButtons = document.querySelectorAll('.modal-close');
+        
+        reportBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                reportModal.style.display = 'flex';
+            });
+        });
+        
+        closeButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const modal = this.closest('.modal');
+                modal.style.display = 'none';
+            });
+        });
+        
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        });
+        
+        // Handle report form submission
+        const reportForm = document.getElementById('reportForm');
+        if (reportForm) {
+            reportForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const materialId = this.getAttribute('data-material-id');
+                const formData = new FormData(this);
+                
+                fetch('/api/report', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        materialId: materialId,
+                        reason: formData.get('reason'),
+                        description: formData.get('description')
+                    }),
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('success', 'Report submitted successfully!');
+                        reportModal.style.display = 'none';
+                        reportForm.reset();
+                    } else {
+                        showNotification('error', data.message || 'Failed to submit report.');
+                    }
+                })
+                .catch(error => {
+                    showNotification('error', 'An error occurred while submitting your report.');
+                    console.error('Error:', error);
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

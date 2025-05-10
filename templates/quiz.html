@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Creator</title>
+  <style>
+    /* General styling */
+    body {
+      font-family: sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 80%;
+      max-width: 600px;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    .controls {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+    button:hover {
+      background-color: #3e8e41;
+    }
+    .question-entry {
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+    }
+    .mcq-options {
+        margin-left: 20px;
+    }
+  </style>
+</head>
+<!-- Test comment -->
+<body>
+  <div class="container">
+    <h2>Create Your Quiz</h2>
+    <form method="POST" action="{{ url_for('create_quiz') }}">
+        <!-- Add a comment here -->
+      <label for="quiz_title">Quiz Title:</label>
+      <input type="text" id="quiz_title" name="quiz_title" required><br><br>
+
+      <label for="course">Course:</label>
+      <select id="course" name="course" required>
+        {% for course in courses %}
+          <option value="{{ course.id }}">{{ course.name }}</option>
+        {% endfor %}
+      </select><br><br>
+
+      <div class="controls">
+        <label for="questionType">Question Type:</label>
+        <select id="questionType">
+          <option value="text">Text Answer</option>
+          <option value="mcq">Multiple Choice</option>
+          <option value="fill_blank">Fill in the Blank</option>
+        </select>
+        <button type="button" onclick="addQuestion()">Add Question</button>
+      </div>
+
+      <div id="questions-container">
+        <!-- Questions will be added here dynamically -->
+      </div>
+      <input type="hidden" id="question_count" name="question_count" value="0">
+      <button type="button" onclick="addQuestion()">Add Question</button><br><br>
+      <button type="submit">Create Quiz</button>
+      {% if quiz_code %}
+        <p>Quiz Code: {{ quiz_code }}</p>
+      {% endif %}
+    </form>
+    <div class="footer">
+      Made with ☕ and ❤️ by Shubham
+    </div>
+  </div>
+  <script>
+    let questionCount = 0;
+
+    function addQuestion() {
+      questionCount++;
+      const questionContainer = document.getElementById('questions-container');
+      const newQuestionEntry = document.createElement('div');
+      newQuestionEntry.className = 'question-entry';
+      newQuestionEntry.id = `question-entry-${questionCount}`; 
+
+      const questionTypeSelect = document.getElementById('questionType');
+      const selectedQuestionType = questionTypeSelect.value;
+
+      let questionHtml = `
+        <label for="question_${questionCount}">Question ${questionCount}:</label>
+        <input type="text" name="question_${questionCount}" placeholder="Enter question text" required><br>
+        <input type="hidden" name="question_${questionCount}_type" value="${selectedQuestionType}">
+      `;
+
+      if (selectedQuestionType === 'mcq') {
+        questionHtml += `
+          <div class="mcq-options">
+            <label>Options:</label><br>
+            <input type="text" name="question_${questionCount}_option_1" placeholder="Option A" required><br>
+            <input type="text" name="question_${questionCount}_option_2" placeholder="Option B" required><br>
+            <input type="text" name="question_${questionCount}_option_3" placeholder="Option C"><br>
+            <input type="text" name="question_${questionCount}_option_4" placeholder="Option D"><br>
+          </div>
+          <label for="answer_${questionCount}">Correct Option (A, B, C, D):</label>
+          <input type="text" name="answer_${questionCount}" placeholder="e.g., A" required><br>
+        `;
+      } else if (selectedQuestionType === 'fill_blank') {
+        questionHtml += `
+          <label for="answer_${questionCount}">Correct Answer:</label>
+          <input type="text" name="answer_${questionCount}" placeholder="Enter fill-in-the-blank answer" required><br>
+        `;
+      } else { // text answer
+         questionHtml += `
+          <label for="answer_${questionCount}">Answer:</label>
+          <input type="text" name="answer_${questionCount}" placeholder="Enter answer" required><br>
+        `;
+      }
+       questionHtml += `<br>`; // Add a break after each question type
+
+      newQuestionEntry.innerHTML = questionHtml;
+      questionContainer.appendChild(newQuestionEntry);
+      document.getElementById('question_count').value = questionCount;
+    }
+
+    // Add the first question when the page loads
+    window.onload = addQuestion;
+
+  </script>
+</body>
+</html
